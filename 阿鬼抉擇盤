@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>命運大頭像轉盤</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="命運轉盤">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f0f2f5">
+
+<style>
+    /* 禁止選取文字，讓它更像 App */
+    * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent; /* 點擊時不要有藍色閃光 */
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        /* 使用 dvh (Dynamic Viewport Height) 避免手機瀏覽器下方工具列遮擋 */
+        height: 100dvh; 
+        background-color: #f0f2f5;
+        font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+        margin: 0;
+        overflow: hidden; /* 禁止滑動畫面 */
+    }
+
+    /* 外框：模擬透明壓克力 */
+    .keychain-container {
+        position: relative;
+        width: 320px;
+        height: 380px;
+        clip-path: polygon(50% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%);
+        background: rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 12px;
+        box-sizing: border-box;
+    }
+
+    /* 背景：6等份放射狀 */
+    .background-board {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        z-index: 1;
+        background: conic-gradient(
+            from 330deg, 
+            #fff176 0deg 60deg,   #80deea 60deg 120deg,
+            #fff176 120deg 180deg, #80deea 180deg 240deg,
+            #fff176 240deg 300deg, #80deea 300deg 360deg
+        );
+    }
+
+    /* 文字樣式 */
+    .label {
+        position: absolute;
+        font-weight: 900;
+        color: #01579b;
+        font-size: 20px;
+        text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+        text-align: center;
+        width: 100px;
+        height: 30px;
+        line-height: 30px;
+        top: 50%; left: 50%;
+        margin-top: -15px; margin-left: -50px;
+        z-index: 2;
+        pointer-events: none;
+    }
+    
+    .pos-1 { transform: rotate(0deg) translate(0, -130px); font-size: 28px; }
+    .pos-2 { transform: rotate(60deg) translate(0, -135px) rotate(-60deg); }
+    .pos-3 { transform: rotate(120deg) translate(0, -130px) rotate(-120deg); font-size: 28px; }
+    .pos-4 { transform: rotate(180deg) translate(0, -130px) rotate(-180deg); font-size: 24px; }
+    .pos-5 { transform: rotate(240deg) translate(0, -135px) rotate(-240deg); font-size: 18px; }
+    .pos-6 { transform: rotate(300deg) translate(0, -135px) rotate(-300deg); }
+
+
+    /* 旋轉區塊設定 */
+    .spinner-avatar {
+        width: 190px;
+        height: 190px;
+        z-index: 10;
+        cursor: pointer;
+        transition: transform 5s cubic-bezier(0.1, 0, 0.2, 1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        transform-origin: center center;
+    }
+
+    /* 圖片設定 */
+    .spinner-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; 
+        pointer-events: none;
+        filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+    }
+
+    .hint {
+        position: absolute;
+        bottom: 30px;
+        color: #555;
+        font-size: 14px;
+        opacity: 0.6;
+    }
+</style>
+</head>
+<body>
+
+    <div class="keychain-container">
+        <div class="background-board">
+            <div class="label pos-1">買</div>
+            <div class="label pos-2">下次再買</div>
+            <div class="label pos-3">買</div>
+            <div class="label pos-4">全都要</div>
+            <div class="label pos-5">魷魚就沒了</div>
+            <div class="label pos-6">再轉一次</div>
+        </div>
+
+        <div class="spinner-avatar" id="avatarWheel">
+            <img src="https://i.imgur.com/nOcWPca.png" alt="Face" id="myAvatar">
+        </div>
+    </div>
+    
+    <div class="hint">點擊大頭開始旋轉</div>
+
+    <script>
+        const wheel = document.getElementById('avatarWheel');
+        let currentRotation = 0;
+
+        wheel.addEventListener('click', () => {
+            // 點擊後隨機旋轉
+            const randomDeg = Math.floor(Math.random() * 360) + 2520;
+            currentRotation += randomDeg;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+        });
+
+        // 防止 iOS 雙點擊縮放
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+    </script>
+
+</body>
+</html>
