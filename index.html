@@ -3,17 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>阿鬼幫你選</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="命運轉盤">
+<meta name="apple-mobile-web-app-title" content="阿鬼幫你選">
 
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f0f2f5">
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-    /* 全域設定：禁止選取與縮放 */
+    /* 全域設定 */
     * {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -95,13 +98,18 @@
         height: 190px;
         z-index: 10;
         cursor: pointer;
-        /* 設定旋轉動畫時間與效果 */
-        transition: transform 5s cubic-bezier(0.1, 0, 0.2, 1);
+        transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1);
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
         transform-origin: center center;
+    }
+
+    /* 特效：旋轉時模糊 */
+    .spinner-avatar.is-spinning img {
+        filter: blur(4px) drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+        transform: scale(0.95);
     }
 
     /* 圖片設定 */
@@ -111,6 +119,7 @@
         object-fit: contain; 
         pointer-events: none;
         filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+        transition: filter 0.2s, transform 0.2s;
     }
 
     .hint {
@@ -135,27 +144,46 @@
         </div>
 
         <div class="spinner-avatar" id="avatarWheel">
-            <img src="https://i.imgur.com/nOcWPca.png" alt="Face" id="myAvatar">
+            <img src="https://i.imgur.com/nOcWPca.png" alt="Ah Gui Face" id="myAvatar">
         </div>
     </div>
     
-    <div class="hint">點擊大頭開始旋轉</div>
+    <div class="hint">點擊阿鬼開始旋轉</div>
 
     <script>
         const wheel = document.getElementById('avatarWheel');
         let currentRotation = 0;
+        let isSpinning = false; 
 
         wheel.addEventListener('click', () => {
-            // 點擊後隨機旋轉 2520度 (7圈) + 0~360度隨機
-            const randomDeg = Math.floor(Math.random() * 360) + 2520;
-            currentRotation += randomDeg;
+            if (isSpinning) return; 
             
-            // 使用 transform 進行旋轉
-            // 備註：旋轉停止後，鳥嘴指向的位置即為結果
+            isSpinning = true;
+            wheel.classList.add('is-spinning'); // 開始模糊特效
+
+            // 旋轉邏輯：隨機角度
+            const randomDeg = Math.floor(Math.random() * 360) + 2520; 
+            currentRotation += randomDeg;
             wheel.style.transform = `rotate(${currentRotation}deg)`;
         });
 
-        // 防止 iOS 雙點擊縮放干擾體驗
+        // 監聽：旋轉結束
+        wheel.addEventListener('transitionend', () => {
+            isSpinning = false;
+            wheel.classList.remove('is-spinning'); // 停止模糊
+            fireConfetti(); // 發射勝利彩帶
+        });
+
+        // 勝利彩帶函式
+        function fireConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#fff176', '#80deea', '#ff3d00']
+            });
+        }
+
         document.addEventListener('dblclick', function(event) {
             event.preventDefault();
         }, { passive: false });
