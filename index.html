@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>阿鬼抉擇盤轉盤</title>
+<title>命運大頭像轉盤</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,12 +13,12 @@
 <meta name="theme-color" content="#f0f2f5">
 
 <style>
-    /* 禁止選取文字，讓它更像 App */
+    /* 全域設定：禁止選取與縮放 */
     * {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         user-select: none;
-        -webkit-tap-highlight-color: transparent; /* 點擊時不要有藍色閃光 */
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -27,15 +26,14 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        /* 使用 dvh (Dynamic Viewport Height) 避免手機瀏覽器下方工具列遮擋 */
         height: 100dvh; 
         background-color: #f0f2f5;
         font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
         margin: 0;
-        overflow: hidden; /* 禁止滑動畫面 */
+        overflow: hidden;
     }
 
-    /* 外框：模擬透明壓克力 */
+    /* 轉盤外框 */
     .keychain-container {
         position: relative;
         width: 320px;
@@ -51,7 +49,7 @@
         box-sizing: border-box;
     }
 
-    /* 背景：6等份放射狀 */
+    /* 背景區塊 */
     .background-board {
         position: absolute;
         width: 100%;
@@ -91,12 +89,13 @@
     .pos-6 { transform: rotate(300deg) translate(0, -135px) rotate(-300deg); }
 
 
-    /* 旋轉區塊設定 */
+    /* --- 中間旋轉區塊 --- */
     .spinner-avatar {
         width: 190px;
         height: 190px;
         z-index: 10;
         cursor: pointer;
+        /* 設定旋轉動畫時間與效果 */
         transition: transform 5s cubic-bezier(0.1, 0, 0.2, 1);
         display: flex;
         justify-content: center;
@@ -140,20 +139,23 @@
         </div>
     </div>
     
-    <div class="hint">鳥為指向，點擊大頭開始旋轉鳥ㄨ點擊大頭
+    <div class="hint">點擊大頭開始旋轉</div>
 
     <script>
         const wheel = document.getElementById('avatarWheel');
         let currentRotation = 0;
 
         wheel.addEventListener('click', () => {
-            // 點擊後隨機旋轉
+            // 點擊後隨機旋轉 2520度 (7圈) + 0~360度隨機
             const randomDeg = Math.floor(Math.random() * 360) + 2520;
             currentRotation += randomDeg;
+            
+            // 使用 transform 進行旋轉
+            // 備註：旋轉停止後，鳥嘴指向的位置即為結果
             wheel.style.transform = `rotate(${currentRotation}deg)`;
         });
 
-        // 防止 iOS 雙點擊縮放
+        // 防止 iOS 雙點擊縮放干擾體驗
         document.addEventListener('dblclick', function(event) {
             event.preventDefault();
         }, { passive: false });
